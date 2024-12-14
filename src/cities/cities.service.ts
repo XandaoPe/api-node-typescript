@@ -2,35 +2,46 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cities } from './cities.model';
+import { Query } from 'express-serve-static-core'
+import { title } from 'process';
 
 @Injectable()
 export class CitiesService {
   constructor(@InjectModel(Cities.name) private citiesModel: Model<Cities>) {}
 
   async create(cities: Cities): Promise<Cities> {
-    console.log('payload service...', cities)
     const createdCities = new this.citiesModel(cities);
-    console.log('createdCities service...', createdCities)
     return createdCities.save();
   }
 
-  async findAll(): Promise<Cities[]> {
-    return this.citiesModel.find().exec();
+  async findAll(query: Query): Promise<Cities[]> {
+
+    const resPerPage = Number(query.limit)
+    const currentPage = Number(query.page) || 1
+    const skip = resPerPage * (currentPage -1)
+
+    const keywork = query.keywork ? {
+      nome: {
+        $regex: query.keywork,
+        // $option: 'i'
+      }
+    } : {}
+    return (await this.citiesModel.find({...keywork}).limit(resPerPage).skip(skip).exec());
   }
 
-  async findOne(id: string): Promise<Cities> {
-    return this.citiesModel.findById(id).exec();
+  async findOne(_id: string): Promise<Cities> {
+    return this.citiesModel.findById(_id).exec();
   }
 
-  async findImage(id: string): Promise<Cities> {
-    return this.citiesModel.findById(id).exec();
+  async findImage(_id: string): Promise<Cities> {
+    return this.citiesModel.findById(_id).exec();
   }
 
-  async update(id: string, cities: Cities): Promise<Cities> {
-    return this.citiesModel.findByIdAndUpdate(id, cities, { new: true }).exec();
+  async update(_id: string, cities: Cities): Promise<Cities> {
+    return this.citiesModel.findByIdAndUpdate(_id, cities, { new: true }).exec();
   }
 
-  async remove(id: string): Promise<Cities> {
-    return this.citiesModel.findByIdAndDelete(id).exec();
+  async remove(_id: string): Promise<Cities> {
+    return this.citiesModel.findByIdAndDelete(_id).exec();
   }
 }

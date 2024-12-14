@@ -4,16 +4,13 @@ import { Document } from 'mongoose';
 @Schema()
 export class User extends Document {
   @Prop()
-  nome: string;
+  nomeCompleto: string;
 
   @Prop()
-  cidade: string;
+  cidadeId: string;
   
   @Prop()
-  imagem: string;
-  
-  @Prop()
-  idade: number;
+  email: string;
 
 }
 

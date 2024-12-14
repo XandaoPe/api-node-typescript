@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { User } from './user.model';
 import { UsersService } from './users.service';
-
+import { Query as ExpressQuery } from 'express-serve-static-core'
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -13,8 +13,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  findAll(@Query() query: ExpressQuery): Promise<User[]> {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')

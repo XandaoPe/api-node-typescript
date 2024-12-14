@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { Cities } from './cities.model';
 import { CitiesService } from './cities.service';
+import { Query as ExpressQuery } from 'express-serve-static-core'
 
 @Controller('cities')
 export class CitiesController {
@@ -8,13 +9,12 @@ export class CitiesController {
 
   @Post()
   create(@Body() cities: Cities): Promise<Cities> {
-    console.log('payload controller...', cities)
     return this.citiesService.create(cities);
   }
 
   @Get()
-  findAll(): Promise<Cities[]> {
-    return this.citiesService.findAll();
+  findAll(@Query() query: ExpressQuery): Promise<Cities[]> {
+    return this.citiesService.findAll(query);
   }
 
   @Get(':id')
